@@ -13,6 +13,7 @@ class PolishDatesPractice {
 
     // Current Round State
     this.currentRound = null;
+    this.isAnsweredState = false;
 
     // Stats
     this.stats = {
@@ -144,10 +145,12 @@ class PolishDatesPractice {
     const savedHistory = localStorage.getItem('pl_dates_history');
     if (savedHistory) {
       try {
-        this.history = JSON.parse(savedHistory);
+        const parsed = JSON.parse(savedHistory);
+        this.history = Array.isArray(parsed) ? parsed : [];
         this.renderHistory();
       } catch (e) {
         console.error('Failed to parse history', e);
+        this.history = [];
       }
     }
 
@@ -216,10 +219,38 @@ class PolishDatesPractice {
     });
 
     // Form Submissions
-    this.selectors.checkBtn.addEventListener('click', () => this.checkAnswer());
-    this.selectors.userInput.addEventListener('keypress', (e) => {
-      if (e.key === 'Enter') {
+    this.selectors.checkBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      if (this.isAnsweredState) {
+        this.newRound();
+      } else {
         this.checkAnswer();
+      }
+    });
+
+    this.selectors.userInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        if (this.isAnsweredState) {
+          this.newRound();
+        } else {
+          this.checkAnswer();
+        }
+      }
+    });
+
+    // Global Enter key for smooth progression
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        if (document.activeElement === this.selectors.userInput) {
+          return;
+        }
+        e.preventDefault();
+        if (this.isAnsweredState) {
+          this.newRound();
+        } else {
+          this.checkAnswer();
+        }
       }
     });
 
@@ -513,6 +544,7 @@ class PolishDatesPractice {
 
   newRound() {
     this.currentRound = this.generateRound();
+    this.isAnsweredState = false;
 
     // Reset UI Elements
     this.selectors.feedbackEl.className = 'feedback hidden';
@@ -619,14 +651,54 @@ class PolishDatesPractice {
   }
 
   normalizeDateInput(str) {
-    return str.replace(/\s+/g, ' ').replace(/[\/,-]/g, '.').replace(/\s*\.\s*/g, '.').trim();
+    if (!str) return '';
+    let s = str.trim().toLowerCase();
+
+    // Map common Polish month names/abbreviations to 2-digit numbers
+    const monthWords = {
+      'stycznia': '01', 'styczen': '01', 'styczeń': '01', 'sty': '01',
+      'lutego': '02', 'luty': '02', 'lut': '02',
+      'marca': '03', 'marzec': '03', 'mar': '03',
+      'kwietnia': '04', 'kwiecien': '04', 'kwiecień': '04', 'kwi': '04',
+      'maja': '05', 'maj': '05',
+      'czerwca': '06', 'czerwiec': '06', 'cze': '06',
+      'lipca': '07', 'lipiec': '07', 'lip': '07',
+      'sierpnia': '08', 'sierpien': '08', 'sierpień': '08', 'sie': '08',
+      'wrzesnia': '09', 'wrzesień': '09', 'wrzesien': '09', 'wrz': '09',
+      'pazdziernika': '10', 'pazdziernik': '10', 'październik': '10', 'października': '10', 'paz': '10', 'paź': '10',
+      'listopada': '11', 'listopad': '11', 'lis': '11',
+      'grudnia': '12', 'grudzien': '12', 'grudzień': '12', 'gru': '12'
+    };
+
+    for (const [name, num] of Object.entries(monthWords)) {
+      const reg = new RegExp(`\\b${name}\\b`, 'i');
+      if (reg.test(s)) {
+        s = s.replace(reg, num);
+        break;
+      }
+    }
+
+    return s
+      .replace(/[\/,-]/g, '.')
+      .replace(/\s+/g, ' ')
+      .replace(/^(\d{1,2})\s+(\d{1,2})\.?$/, '$1.$2')
+      .replace(/\s*\.\s*/g, '.')
+      .replace(/\.+$/, '')
+      .trim();
   }
 
   checkAnswer() {
     if (this.mode === 'challenge') return;
 
     const raw = this.selectors.userInput.value.trim();
-    if (!raw) return;
+    if (!raw) {
+      this.selectors.userInput.focus();
+      this.selectors.userInput.classList.add('input-error-shake');
+      setTimeout(() => {
+        this.selectors.userInput.classList.remove('input-error-shake');
+      }, 500);
+      return;
+    }
 
     let isCorrect = false;
 
@@ -640,9 +712,9 @@ class PolishDatesPractice {
       const norm = this.normalizeDateInput(raw);
       const expected = this.currentRound.expectedAnswer;
       // Also allow 20.3 matching 20.03
-      const [d, m] = norm.split('.');
-      if (d && m) {
-        const padded = `${this.pad(parseInt(d, 10))}.${this.pad(parseInt(m, 10))}`;
+      const parts = norm.split('.');
+      if (parts.length >= 2 && parts[0] && parts[1]) {
+        const padded = `${this.pad(parseInt(parts[0], 10))}.${this.pad(parseInt(parts[1], 10))}`;
         isCorrect = padded === expected;
       }
     }
@@ -656,6 +728,7 @@ class PolishDatesPractice {
   }
 
   processOutcome(isCorrect, userGuess) {
+    this.isAnsweredState = true;
     this.stats.total += 1;
     if (isCorrect) {
       this.stats.correct += 1;
@@ -685,7 +758,6 @@ class PolishDatesPractice {
 
     if (this.mode !== 'challenge') {
       this.selectors.userInput.disabled = true;
-      this.selectors.checkBtn.disabled = true;
       this.selectors.revealBtn.disabled = true;
     } else {
       const btns = this.selectors.grammarChoicesGrid.querySelectorAll('button');
@@ -702,6 +774,7 @@ class PolishDatesPractice {
   revealAnswer() {
     if (!this.currentRound) return;
 
+    this.isAnsweredState = true;
     this.stats.total += 1;
     this.stats.streak = 0;
 
@@ -725,7 +798,6 @@ class PolishDatesPractice {
 
     if (this.mode !== 'challenge') {
       this.selectors.userInput.disabled = true;
-      this.selectors.checkBtn.disabled = true;
       this.selectors.revealBtn.disabled = true;
     } else {
       const btns = this.selectors.grammarChoicesGrid.querySelectorAll('button');
@@ -753,19 +825,8 @@ class PolishDatesPractice {
 
     nextBtn.addEventListener('click', () => {
       nextBtn.remove();
-      setTimeout(() => this.newRound(), 0);
+      this.newRound();
     });
-
-    const nextKeyListener = (e) => {
-      if (e.key === 'Enter') {
-        e.preventDefault();
-        e.stopPropagation();
-        document.removeEventListener('keydown', nextKeyListener);
-        const btn = document.getElementById('next-round-btn');
-        if (btn) btn.click();
-      }
-    };
-    document.addEventListener('keydown', nextKeyListener);
   }
 
   showFeedback(isCorrect, isRevealed = false) {
