@@ -239,8 +239,21 @@ class PolishDatesPractice {
       }
     });
 
-    // Global Enter key for smooth progression
+    // Global Enter key & Challenge mode number keys (1 & 2)
     document.addEventListener('keydown', (e) => {
+      if (this.mode === 'challenge' && !this.isAnsweredState && this.currentRound && this.currentRound.options) {
+        if (e.key === '1' && this.currentRound.options[0]) {
+          e.preventDefault();
+          this.handleChallengeChoice(this.currentRound.options[0]);
+          return;
+        }
+        if (e.key === '2' && this.currentRound.options[1]) {
+          e.preventDefault();
+          this.handleChallengeChoice(this.currentRound.options[1]);
+          return;
+        }
+      }
+
       if (e.key === 'Enter') {
         if (document.activeElement === this.selectors.userInput) {
           return;
@@ -248,7 +261,7 @@ class PolishDatesPractice {
         e.preventDefault();
         if (this.isAnsweredState) {
           this.newRound();
-        } else {
+        } else if (this.mode !== 'challenge') {
           this.checkAnswer();
         }
       }
@@ -571,13 +584,13 @@ class PolishDatesPractice {
 
       // Populate Choices
       this.selectors.grammarChoicesGrid.innerHTML = '';
-      this.currentRound.options.forEach(opt => {
+      this.currentRound.options.forEach((opt, idx) => {
         const btn = document.createElement('button');
         btn.className = `grammar-choice-btn ${opt.endsWith('ego') ? 'gen-choice' : 'nom-choice'}`;
         const endingLabel = opt.endsWith('ego') ? 'Dopełniacz (-ego)' : 'Mianownik (-y / -i)';
         btn.innerHTML = `
           <span>${opt}</span>
-          <span class="choice-ending">${endingLabel}</span>
+          <span class="choice-ending">${endingLabel} <span class="kbd">${idx + 1}</span></span>
         `;
         btn.addEventListener('click', () => this.handleChallengeChoice(opt));
         this.selectors.grammarChoicesGrid.appendChild(btn);
