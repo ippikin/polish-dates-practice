@@ -8,7 +8,7 @@
   <meta name="msvalidate.01" content="9C61C7104EEFD86EE01BC7C913FAF955" />
   <title>Daty po Polsku | Polish Dates (Który vs Kiedy) Practice</title>
   <meta name="description" content="Master Polish calendar dates listening practice and grammatical declensions: Który dziś jest? vs Kiedy? (-y/-i vs -ego) and date ranges (od... do...).">
-  <link rel="stylesheet" href="style.css?v=5">
+  <link rel="stylesheet" href="style.css?v=6">
   <link rel="icon" type="image/svg+xml" href="favicon.svg">
 
   <!-- GoatCounter analytics -->
@@ -67,18 +67,22 @@
         </div>
 
         <!-- Mode Selector Tabs -->
-        <div class="mode-tabs" role="tablist">
-          <button class="mode-tab active" data-mode="ktory" title="Mianownik (-y / -i): Dziś jest...">
-            📅 Który dziś jest?
+        <div class="mode-tabs" role="tablist" aria-label="Wybierz tryb ćwiczeń (Select practice mode)">
+          <button class="mode-tab active" data-mode="ktory" role="tab" aria-selected="true" title="Mianownik (-y / -i): Dziś jest...">
+            <span class="mode-tab-icon">📅</span>
+            <span class="mode-tab-label">Który dziś jest?</span>
           </button>
-          <button class="mode-tab" data-mode="kiedy" title="Dopełniacz (-ego): Urodziny mam...">
-            🎂 Kiedy? (-ego)
+          <button class="mode-tab" data-mode="kiedy" role="tab" aria-selected="false" title="Dopełniacz (-ego): Urodziny mam...">
+            <span class="mode-tab-icon">🎂</span>
+            <span class="mode-tab-label">Kiedy? <span class="mode-tab-sub">(-ego)</span></span>
           </button>
-          <button class="mode-tab" data-mode="challenge" title="Grammar Challenge: Wybierz poprawną końcówkę">
-            ⚡ Wyzwanie (Challenge)
+          <button class="mode-tab" data-mode="challenge" role="tab" aria-selected="false" title="Grammar Challenge: Wybierz poprawną końcówkę">
+            <span class="mode-tab-icon">⚡</span>
+            <span class="mode-tab-label">Wyzwanie <span class="mode-tab-sub">(Challenge)</span></span>
           </button>
-          <button class="mode-tab" data-mode="ranges" title="Zakres dat: Od... do...">
-            ↔️ Od... do...
+          <button class="mode-tab" data-mode="ranges" role="tab" aria-selected="false" title="Zakres dat: Od... do...">
+            <span class="mode-tab-icon">↔️</span>
+            <span class="mode-tab-label">Od... do...</span>
           </button>
         </div>
 
@@ -338,6 +342,6 @@
     </footer>
   </div>
 
-  <script src="app.js?v=5"></script>
+  <script src="app.js?v=6"></script>
 </body>
 </html>

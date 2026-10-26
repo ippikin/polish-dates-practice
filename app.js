@@ -179,8 +179,10 @@ class PolishDatesPractice {
     this.selectors.modeTabs.forEach(tab => {
       if (tab.dataset.mode === this.mode) {
         tab.classList.add('active');
+        tab.setAttribute('aria-selected', 'true');
       } else {
         tab.classList.remove('active');
+        tab.setAttribute('aria-selected', 'false');
       }
     });
 
