@@ -108,6 +108,21 @@
             </button>
           </div>
           <div class="audio-hint" id="audio-hint">Naciśnij przycisk, aby usłyszeć zdanie (Press to hear audio)</div>
+
+          <!-- Transcript / Spoken Text Reveal Toggle -->
+          <div class="transcript-wrapper">
+            <button type="button" class="transcript-toggle-btn" id="transcript-toggle-btn" title="Pokaż lub ukryj co dokładnie powiedziano po polsku">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/>
+                <circle cx="12" cy="12" r="3"/>
+              </svg>
+              <span id="transcript-btn-label">Pokaż co powiedziano (Reveal spoken text)</span>
+            </button>
+            <div class="spoken-transcript-card hidden" id="spoken-transcript-card">
+              <div class="spoken-transcript-label">🗣️ Wymówione zdanie (Spoken in Polish):</div>
+              <div class="spoken-transcript-text" id="spoken-transcript-text"></div>
+            </div>
+          </div>
         </div>
 
         <!-- Input Form (Standard Date Input) -->
@@ -161,6 +176,9 @@
           </div>
           <div class="feedback-details" id="feedback-message">
             Data: <strong>01.06</strong>
+          </div>
+          <div class="feedback-spoken" id="feedback-spoken">
+            🗣️ Co powiedziano (What was said): <span class="polish-spoken-sentence" id="feedback-spoken-text"></span>
           </div>
           <div class="feedback-spelling" id="feedback-spelling">
             Słownie (In words): <span class="polish-spelling-highlight">pierwszego czerwca</span>

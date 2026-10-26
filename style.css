@@ -268,6 +268,76 @@ header p {
   gap: 0.4rem;
 }
 
+/* Transcript Toggle & Spoken Reveal Card */
+.transcript-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+  margin-top: 0.4rem;
+  width: 100%;
+}
+
+.transcript-toggle-btn {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: var(--text-secondary);
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  font-weight: 500;
+  padding: 0.45rem 1rem;
+  border-radius: 20px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: var(--transition-smooth);
+}
+
+.transcript-toggle-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text-primary);
+  border-color: rgba(255, 255, 255, 0.22);
+}
+
+.transcript-toggle-btn.active {
+  background: rgba(255, 46, 99, 0.15);
+  border-color: var(--accent-red);
+  color: #ff9bbb;
+}
+
+.spoken-transcript-card {
+  width: 100%;
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-left: 3px solid var(--accent-red);
+  border-radius: 10px;
+  padding: 0.85rem 1.1rem;
+  text-align: left;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  animation: fadeInDown 0.3s ease-out;
+}
+
+.spoken-transcript-card.hidden {
+  display: none !important;
+}
+
+.spoken-transcript-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-secondary);
+  margin-bottom: 0.35rem;
+}
+
+.spoken-transcript-text {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  line-height: 1.45;
+}
+
 /* Practice Input Form */
 .input-form {
   display: flex;
@@ -448,6 +518,21 @@ header p {
 
 .feedback-details {
   font-size: 1.1rem;
+}
+
+.feedback-spoken {
+  font-size: 1.05rem;
+  background: rgba(0, 0, 0, 0.25);
+  padding: 0.75rem 1rem;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  line-height: 1.45;
+  color: var(--text-primary);
+}
+
+.polish-spoken-sentence {
+  font-weight: 600;
+  color: #ffffff;
 }
 
 .feedback-spelling {
@@ -779,6 +864,19 @@ header p {
   color: var(--text-primary);
   background: rgba(255, 255, 255, 0.08);
   transform: scale(1.1);
+}
+
+.history-spoken {
+  font-size: 0.88rem;
+  color: var(--text-primary);
+  padding-left: 1.5rem;
+  font-weight: 500;
+  line-height: 1.35;
+}
+
+.history-spoken .polish-spelling-highlight {
+  color: var(--accent-red-hover);
+  font-weight: 600;
 }
 
 .history-spelling {

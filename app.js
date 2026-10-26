@@ -84,6 +84,10 @@ class PolishDatesPractice {
       playBtn: document.getElementById('play-btn'),
       playSlowBtn: document.getElementById('play-slow-btn'),
       audioHint: document.getElementById('audio-hint'),
+      transcriptToggleBtn: document.getElementById('transcript-toggle-btn'),
+      transcriptBtnLabel: document.getElementById('transcript-btn-label'),
+      spokenTranscriptCard: document.getElementById('spoken-transcript-card'),
+      spokenTranscriptText: document.getElementById('spoken-transcript-text'),
       standardInputForm: document.getElementById('standard-input-form'),
       userInput: document.getElementById('user-input'),
       inputHelperText: document.getElementById('input-helper-text'),
@@ -99,6 +103,8 @@ class PolishDatesPractice {
       feedbackEl: document.getElementById('feedback'),
       feedbackTitle: document.getElementById('feedback-title'),
       feedbackMessage: document.getElementById('feedback-message'),
+      feedbackSpoken: document.getElementById('feedback-spoken'),
+      feedbackSpokenText: document.getElementById('feedback-spoken-text'),
       feedbackSpelling: document.getElementById('feedback-spelling'),
       grammarRuleTip: document.getElementById('grammar-rule-tip'),
       voiceSelect: document.getElementById('voice-select'),
@@ -223,6 +229,13 @@ class PolishDatesPractice {
     this.selectors.challengeRevealBtn.addEventListener('click', () => this.revealAnswer());
     this.selectors.challengeSkipBtn.addEventListener('click', () => this.newRound());
 
+    // Transcript Toggle
+    if (this.selectors.transcriptToggleBtn) {
+      this.selectors.transcriptToggleBtn.addEventListener('click', () => {
+        this.toggleTranscript();
+      });
+    }
+
     // Month Chips Quick Selection
     this.selectors.monthChips.forEach(chip => {
       chip.addEventListener('click', () => {
@@ -289,6 +302,65 @@ class PolishDatesPractice {
       });
       if (!this.polishVoice) {
         this.polishVoice = this.voices[0];
+      }
+    }
+  }
+
+  escapeHtml(str) {
+    if (!str) return '';
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
+  }
+
+  formatSpokenSentenceHtml(spokenText, spelling) {
+    if (!spokenText) return '';
+    if (!spelling) return `„${this.escapeHtml(spokenText)}”`;
+
+    const cleanSpoken = spokenText.trim();
+    const cleanSpelling = spelling.trim();
+    const lowerSpoken = cleanSpoken.toLowerCase();
+    const lowerSpelling = cleanSpelling.toLowerCase();
+
+    const idx = lowerSpoken.indexOf(lowerSpelling);
+    if (idx !== -1) {
+      const before = this.escapeHtml(cleanSpoken.substring(0, idx));
+      const match = this.escapeHtml(cleanSpoken.substring(idx, idx + cleanSpelling.length));
+      const after = this.escapeHtml(cleanSpoken.substring(idx + cleanSpelling.length));
+      return `„${before}<span class="polish-spelling-highlight">${match}</span>${after}”`;
+    }
+    return `„${this.escapeHtml(cleanSpoken)}”`;
+  }
+
+  toggleTranscript(forceShow = null) {
+    if (!this.selectors.spokenTranscriptCard || !this.currentRound) return;
+    const isHidden = this.selectors.spokenTranscriptCard.classList.contains('hidden');
+    const shouldShow = forceShow !== null ? forceShow : isHidden;
+
+    if (shouldShow) {
+      this.selectors.spokenTranscriptCard.classList.remove('hidden');
+      if (this.selectors.transcriptToggleBtn) {
+        this.selectors.transcriptToggleBtn.classList.add('active');
+      }
+      if (this.selectors.transcriptBtnLabel) {
+        this.selectors.transcriptBtnLabel.textContent = 'Ukryj co powiedziano (Hide spoken text)';
+      }
+      if (this.selectors.spokenTranscriptText) {
+        this.selectors.spokenTranscriptText.innerHTML = this.formatSpokenSentenceHtml(
+          this.currentRound.spokenText,
+          this.currentRound.spelling
+        );
+      }
+    } else {
+      this.selectors.spokenTranscriptCard.classList.add('hidden');
+      if (this.selectors.transcriptToggleBtn) {
+        this.selectors.transcriptToggleBtn.classList.remove('active');
+      }
+      if (this.selectors.transcriptBtnLabel) {
+        this.selectors.transcriptBtnLabel.textContent = 'Pokaż co powiedziano (Reveal spoken text)';
       }
     }
   }
@@ -445,6 +517,17 @@ class PolishDatesPractice {
     // Reset UI Elements
     this.selectors.feedbackEl.className = 'feedback hidden';
 
+    // Reset Transcript Box
+    if (this.selectors.spokenTranscriptCard) {
+      this.selectors.spokenTranscriptCard.classList.add('hidden');
+    }
+    if (this.selectors.transcriptToggleBtn) {
+      this.selectors.transcriptToggleBtn.classList.remove('active');
+    }
+    if (this.selectors.transcriptBtnLabel) {
+      this.selectors.transcriptBtnLabel.textContent = 'Pokaż co powiedziano (Reveal spoken text)';
+    }
+
     if (this.mode === 'challenge') {
       this.selectors.standardInputForm.classList.add('hidden');
       this.selectors.grammarChoiceForm.classList.remove('hidden');
@@ -592,7 +675,8 @@ class PolishDatesPractice {
       displayDate: this.currentRound.displayDate,
       guess: userGuess,
       correct: isCorrect,
-      spelling: this.currentRound.spelling
+      spelling: this.currentRound.spelling,
+      spokenText: this.currentRound.spokenText
     });
 
     if (this.history.length > 20) {
@@ -622,6 +706,7 @@ class PolishDatesPractice {
     this.stats.streak = 0;
 
     this.showFeedback(false, true);
+    this.toggleTranscript(true);
 
     this.history.unshift({
       id: Date.now(),
@@ -630,6 +715,7 @@ class PolishDatesPractice {
       guess: 'Revealed',
       correct: false,
       spelling: this.currentRound.spelling,
+      spokenText: this.currentRound.spokenText,
       revealed: true
     });
 
@@ -702,6 +788,13 @@ class PolishDatesPractice {
       this.selectors.feedbackMessage.innerHTML = `Poprawna odpowiedź: <strong>${this.currentRound.displayDate}</strong>`;
     }
 
+    if (this.selectors.feedbackSpokenText && this.currentRound) {
+      this.selectors.feedbackSpokenText.innerHTML = this.formatSpokenSentenceHtml(
+        this.currentRound.spokenText,
+        this.currentRound.spelling
+      );
+    }
+
     this.selectors.feedbackSpelling.innerHTML = `Słownie (In words): <span class="polish-spelling-highlight">${this.currentRound.spelling}</span>`;
     this.selectors.grammarRuleTip.innerHTML = `💡 <strong>Reguła gramatyczna:</strong> ${this.currentRound.ruleTip}`;
   }
@@ -736,22 +829,25 @@ class PolishDatesPractice {
 
       const guessStr = item.revealed
         ? '<i>revealed</i>'
-        : (item.guess !== null ? item.guess : 'None');
+        : (item.guess !== null ? this.escapeHtml(item.guess) : 'None');
+
+      const spokenHtml = this.formatSpokenSentenceHtml(item.spokenText, item.spelling);
 
       li.innerHTML = `
         <div class="history-header">
           ${badge}
-          <span class="history-number">${item.displayDate}</span>
+          <span class="history-number">${this.escapeHtml(item.displayDate)}</span>
           <span class="history-guess">Guess: ${guessStr}</span>
-          <button class="history-replay-btn" title="Replay Audio" data-text="${item.spelling}">🔊</button>
+          <button class="history-replay-btn" title="Odtwórz zdanie (Replay Audio)" data-text="${this.escapeHtml(item.spokenText || item.spelling)}">🔊</button>
         </div>
-        <div class="history-spelling">${item.spelling}</div>
+        <div class="history-spoken">🗣️ ${spokenHtml}</div>
+        <div class="history-spelling">Słownie: ${this.escapeHtml(item.spelling)}</div>
       `;
 
       const replayBtn = li.querySelector('.history-replay-btn');
       replayBtn.addEventListener('click', (e) => {
         e.stopPropagation();
-        const text = e.target.dataset.text;
+        const text = e.currentTarget.dataset.text;
         this.speakText(text, 1.0);
       });
 
