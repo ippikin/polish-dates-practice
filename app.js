@@ -183,6 +183,34 @@ class PolishDatesPractice {
         tab.classList.remove('active');
       }
     });
+
+    // Update cheat sheet / helper cards to be context specific for the selected mode
+    const ruleKtory = document.querySelector('.rule-ktory');
+    const ruleKiedy = document.querySelector('.rule-kiedy');
+    const ruleOdDo = document.querySelector('.rule-od-do');
+
+    [ruleKtory, ruleKiedy, ruleOdDo].forEach(el => {
+      if (el) el.classList.remove('active-rule', 'dimmed-rule');
+    });
+
+    if (this.mode === 'ktory') {
+      if (ruleKtory) ruleKtory.classList.add('active-rule');
+      if (ruleKiedy) ruleKiedy.classList.add('dimmed-rule');
+      if (ruleOdDo) ruleOdDo.classList.add('dimmed-rule');
+    } else if (this.mode === 'kiedy') {
+      if (ruleKiedy) ruleKiedy.classList.add('active-rule');
+      if (ruleKtory) ruleKtory.classList.add('dimmed-rule');
+      if (ruleOdDo) ruleOdDo.classList.add('dimmed-rule');
+    } else if (this.mode === 'ranges') {
+      if (ruleOdDo) ruleOdDo.classList.add('active-rule');
+      if (ruleKtory) ruleKtory.classList.add('dimmed-rule');
+      if (ruleKiedy) ruleKiedy.classList.add('dimmed-rule');
+    } else if (this.mode === 'challenge') {
+      // In challenge mode, highlight both to show the contrast
+      if (ruleKtory) ruleKtory.classList.add('active-rule');
+      if (ruleKiedy) ruleKiedy.classList.add('active-rule');
+      if (ruleOdDo) ruleOdDo.classList.add('dimmed-rule');
+    }
   }
 
   setupEventListeners() {
@@ -608,17 +636,17 @@ class PolishDatesPractice {
         this.selectors.contextBadge.textContent = 'Pytanie: Który dziś jest?';
         this.selectors.contextPrompt.textContent = 'Posłuchaj dzisiejszej daty (Mianownik: -y / -i) i wpisz DD.MM:';
         this.selectors.userInput.placeholder = 'np. 22.09';
-        this.selectors.inputHelperText.innerHTML = 'Wpisz datę w formacie dzień.miesiąc (np. <strong>22.09</strong>):';
+        this.selectors.inputHelperText.innerHTML = '📅 <strong>Mianownik (-y / -i)</strong>: Wpisz datę (np. <strong>22.09</strong>) lub wybierz miesiąc poniżej:';
       } else if (this.mode === 'kiedy') {
         this.selectors.contextBadge.textContent = this.currentRound.promptText || 'Pytanie: Kiedy?';
         this.selectors.contextPrompt.textContent = 'Posłuchaj daty wydarzenia (Dopełniacz: -ego) i wpisz DD.MM:';
         this.selectors.userInput.placeholder = 'np. 01.06';
-        this.selectors.inputHelperText.innerHTML = 'Wpisz datę w formacie dzień.miesiąc (np. <strong>01.06</strong>):';
+        this.selectors.inputHelperText.innerHTML = '🎂 <strong>Dopełniacz (-ego)</strong>: Wpisz datę (np. <strong>01.06</strong>) lub wybierz miesiąc poniżej:';
       } else if (this.mode === 'ranges') {
         this.selectors.contextBadge.textContent = 'Zakres dat: Od... do...';
         this.selectors.contextPrompt.textContent = 'Posłuchaj zakresu dat i wpisz początek i koniec (DD.MM - DD.MM):';
         this.selectors.userInput.placeholder = 'np. 02.03 - 09.03';
-        this.selectors.inputHelperText.innerHTML = 'Wpisz zakres w formacie <strong>02.03 - 09.03</strong>:';
+        this.selectors.inputHelperText.innerHTML = '↔️ <strong>Od... do...</strong> (obie daty w <strong>-ego</strong>): Wpisz zakres (np. <strong>02.03 - 09.03</strong>):';
       }
 
       setTimeout(() => {

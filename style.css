@@ -1184,6 +1184,33 @@ footer a:hover {
   border: 1px solid rgba(255, 255, 255, 0.06);
   border-radius: 10px;
   padding: 0.9rem;
+  transition: var(--transition-smooth);
+}
+
+.rule-box.active-rule {
+  border-color: rgba(255, 255, 255, 0.35);
+  box-shadow: 0 0 20px rgba(255, 46, 99, 0.18);
+  background: rgba(255, 255, 255, 0.05);
+  transform: translateY(-2px);
+}
+
+.rule-box.active-rule.rule-ktory {
+  border-color: rgba(16, 185, 129, 0.5);
+  box-shadow: 0 0 20px rgba(16, 185, 129, 0.2);
+}
+
+.rule-box.active-rule.rule-kiedy {
+  border-color: rgba(255, 46, 99, 0.5);
+  box-shadow: 0 0 20px rgba(255, 46, 99, 0.2);
+}
+
+.rule-box.active-rule.rule-od-do {
+  border-color: rgba(251, 191, 36, 0.5);
+  box-shadow: 0 0 20px rgba(251, 191, 36, 0.2);
+}
+
+.rule-box.dimmed-rule {
+  opacity: 0.38;
 }
 
 .rule-header {
